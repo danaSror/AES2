@@ -25,7 +25,6 @@ public class Message {
     //</editor-fold>
 
     //<editor-fold desc="Getters">
-
     public List<Block> getMsg_blocks() {
         return msg_blocks;
     }
@@ -60,9 +59,9 @@ public class Message {
 
     }
 
-    public boolean isEquals(Message other_msg) {
+    public boolean isEquals(Message other) {
         for(int i=0; i < this.msg_blocks.size(); i++) {
-            if(!(this.getBlock(i).equals(other_msg.getBlock(i))))
+            if(!(this.getBlock(i).isEquals(other.getBlock(i))))
                 return false;
         }
         return true;

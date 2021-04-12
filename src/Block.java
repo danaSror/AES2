@@ -25,17 +25,13 @@ public class Block {
     }
     //</editor-fold>
 
-
     //<editor-fold desc="Operators">
     /**
      *
      * @return True if there is still place in the block
      */
     public boolean isFull(){
-        if(this.row_offset >= ROW_SIZE || this.col_offset >= COL_SIZE){
-            return false;
-        }
-        return true;
+        return (this.row_offset >= ROW_SIZE) || (this.col_offset >= COL_SIZE);
     }
 
     public boolean insert(String val){
@@ -45,6 +41,31 @@ public class Block {
             return true;
         }
         return false;
+    }
+    public byte[] blockToBytes() {
+        byte[] result = new byte[ROW_SIZE * COL_SIZE];
+        for(int r = 0; r < ROW_SIZE; r++) {
+            for(int c = 0; c < COL_SIZE; c++) {
+                String hex = this.getCellValue(r, c);
+                byte b;
+                if(hex.length()<2){
+                    b = (byte)toDigit(hex.charAt(0));
+                }
+                else{
+                    int digit1 = toDigit(hex.charAt(0));
+                    int digit2 = toDigit(hex.charAt(1));
+                    b = (byte)((digit1 << 4) + digit2);
+                }
+                result[r * ROW_SIZE + c] = b;
+            }
+        }
+        return result;
+    }
+
+    private static int toDigit(char hexadecimal_Char) {
+        int new_digit = Character.digit(hexadecimal_Char, 16);
+        if(new_digit == -1) {}
+        return new_digit;
     }
 
     private void updateBlockOffsets(){
@@ -71,9 +92,10 @@ public class Block {
             for(int c = 0; c < COL_SIZE; c++) {
                 String this_val_hexadecimal = this.getCellValue(r,c);
                 String other_val_hexadecimal = other_block.getCellValue(r,c);
-                byte byte_result = (byte)((Integer.parseInt(this_val_hexadecimal, 16)) ^ (Integer.parseInt(other_val_hexadecimal, 16)));
-                String hexadecimal_xor_result = (String)(Integer.toHexString(byte_result & 0xff)) ; // convert byte to hex
-                new_block.insert(hexadecimal_xor_result);
+                int num1 = Integer.parseInt(this_val_hexadecimal, 16);
+                int num2 = Integer.parseInt(other_val_hexadecimal, 16);
+                byte xor = (byte)(num1 ^ num2);
+                new_block.insert(Integer.toHexString(xor & 0xff));
             }
         }
         return new_block;
@@ -110,7 +132,6 @@ public class Block {
     }
     //</editor-fold>
 
-
     //<editor-fold desc="Getters">
     /**
      *
@@ -123,29 +144,4 @@ public class Block {
     //</editor-fold>
 
 
-    public byte[] blockToBytes() {
-        byte[] result = new byte[ROW_SIZE * COL_SIZE];
-        for(int r = 0; r < ROW_SIZE; r++) {
-            for(int c = 0; c < COL_SIZE; c++) {
-                String hex = this.getCellValue(r, c);
-                byte b;
-                if(hex.length()<2){
-                    b = (byte)toDigit(hex.charAt(0));
-                }
-                else{
-                    int digit1 = toDigit(hex.charAt(0));
-                    int digit2 = toDigit(hex.charAt(1));
-                    b = (byte)((digit1 << 4) + digit2);
-                }
-                result[r * ROW_SIZE + c] = b;
-            }
-        }
-        return result;
-    }
-
-    private static int toDigit(char hexadecimal_Char) {
-        int new_digit = Character.digit(hexadecimal_Char, 16);
-        if(new_digit == -1) {}
-        return new_digit;
-    }
 }//end class
